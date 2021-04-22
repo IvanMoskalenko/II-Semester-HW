@@ -2,8 +2,8 @@
 namespace System
 open System.Reflection
 
-[<assembly: AssemblyTitleAttribute("SecondSemester")>]
-[<assembly: AssemblyProductAttribute("SecondSemester")>]
+[<assembly: AssemblyTitleAttribute("Matrix Library.Tests")>]
+[<assembly: AssemblyProductAttribute("Matrix Library")>]
 [<assembly: AssemblyVersionAttribute("0.1.0")>]
 [<assembly: AssemblyMetadataAttribute("ReleaseDate","2017-03-17T00:00:00.0000000")>]
 [<assembly: AssemblyFileVersionAttribute("0.1.0")>]
@@ -13,8 +13,8 @@ open System.Reflection
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] AssemblyTitle = "SecondSemester"
-    let [<Literal>] AssemblyProduct = "SecondSemester"
+    let [<Literal>] AssemblyTitle = "Matrix Library.Tests"
+    let [<Literal>] AssemblyProduct = "Matrix Library"
     let [<Literal>] AssemblyVersion = "0.1.0"
     let [<Literal>] AssemblyMetadata_ReleaseDate = "2017-03-17T00:00:00.0000000"
     let [<Literal>] AssemblyFileVersion = "0.1.0"

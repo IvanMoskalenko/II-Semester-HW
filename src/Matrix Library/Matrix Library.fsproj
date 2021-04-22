@@ -2,12 +2,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <OutputType>Exe</OutputType>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     </PropertyGroup>
     <PropertyGroup>
-        <Title>SecondSemester</Title>
-        <Description>SecondSemester does the thing!</Description>
+        <Title>Matrix Library</Title>
+        <Description>Library for working with matrices</Description>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <Optimize>true</Optimize>
@@ -15,8 +14,10 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="AssemblyInfo.fs" />
+        <Compile Include="AlgebraicStructures.fs" />
+        <Compile Include="Dense.fs" />
+        <Compile Include="Sparse.fs" />
         <None Include="App.config" />
-        <Compile Include="Main.fs" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -11,7 +11,10 @@
         <Compile Include="Main.fs" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/SecondSemester/SecondSemester.fsproj" />
+        <ProjectReference Include="../../src/Matrix Library/Matrix Library.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Expecto.FsCheck" Version="9.0.2" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
