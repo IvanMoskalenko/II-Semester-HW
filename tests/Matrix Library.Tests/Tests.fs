@@ -3,8 +3,8 @@ open System
 open Expecto
 open AlgebraicStructures
 open MatrixLib
-open Dense
-open Sparse
+open SMatrixTypes
+open SMatrixTransforms
 
 let rand = Random()
 
@@ -49,8 +49,8 @@ let tests =
             let sm2 = generateSparseMatrix dim dim
             let m1 = genArrayBySparseMatrix sm1
             let m2 = genArrayBySparseMatrix sm2
-            let sum1 = Dense.sum m1 m2 |> arrayToSparseMatrix |> toTree
-            let sum2 = Sparse.sum (sm1 |> toTree) (sm2 |> toTree) structure
+            let sum1 = DenseOp.sum m1 m2 |> arrayToSparseMatrix |> toTree
+            let sum2 = SparseOp.sum (sm1 |> toTree) (sm2 |> toTree) structure
             Expect.equal sum1 sum2 ""
                     
         testProperty "Multiply" <| fun (dim: int) ->
@@ -59,15 +59,15 @@ let tests =
             let sm2 = generateSparseMatrix dim dim
             let m1 = genArrayBySparseMatrix sm1
             let m2 = genArrayBySparseMatrix sm2
-            let mul1 = Dense.multiply m1 m2 |> arrayToSparseMatrix |> toTree
-            let mul2 = Sparse.multiply (sm1 |> toTree) (sm2 |> toTree) structure
+            let mul1 = DenseOp.multiply m1 m2 |> arrayToSparseMatrix |> toTree
+            let mul2 = SparseOp.multiply (sm1 |> toTree) (sm2 |> toTree) structure
             Expect.equal mul1 mul2 ""
         
         testProperty "Parallel multiply" <| fun _ ->
             let x = genRandomTree 7
             let y = genRandomTree 7
-            let res1 = Sparse.multiply x y structure
-            let res2 = Sparse.parallelMultiply x y structure 3
+            let res1 = SparseOp.multiply x y structure
+            let res2 = SparseOp.parallelMultiply x y structure 3
             Expect.equal res1 res2 ""
                     
         testProperty "Tensor multiply" <| fun _ ->
@@ -76,6 +76,6 @@ let tests =
             let sm2 = generateSparseMatrix dim dim
             let m1 = genArrayBySparseMatrix sm1
             let m2 = genArrayBySparseMatrix sm2
-            let tmul1 = Dense.tensorMultiply m1 m2 |> arrayToSparseMatrix |> toTree
-            let tmul2 = Sparse.tensorMultiply (sm1 |> toTree) (sm2 |> toTree) structure
+            let tmul1 = DenseOp.tensorMultiply m1 m2 |> arrayToSparseMatrix |> toTree
+            let tmul2 = SparseOp.tensorMultiply (sm1 |> toTree) (sm2 |> toTree) structure
             Expect.equal tmul1 tmul2 ""]

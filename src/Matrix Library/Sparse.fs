@@ -1,7 +1,5 @@
 ﻿namespace MatrixLib
-module Sparse =
-    open AlgebraicStructures
-
+module SMatrixTypes =
     type QuadTree<'t> =
         | None
         | Leaf of 't
@@ -11,8 +9,12 @@ module Sparse =
         val numOfRows: int
         val numOfCols : int
         val notEmptyCells: list<int * int * 't>
-        new (x, y, lst) = {numOfRows = x; numOfCols = y; notEmptyCells = lst}
+        new (x, y, lst) = {numOfRows = x; numOfCols = y; notEmptyCells = lst}   
         
+module SparseOp =
+    open AlgebraicStructures
+    open SMatrixTypes
+            
     let sum x y structure =
         let operation, neutral = getOperationAndNeutral structure false
         let rec _go x y =
@@ -98,7 +100,10 @@ module Sparse =
                 | None -> None
                 | Node (NW, NE, SW, SE) -> Node (_go NW, _go NE, _go SW, _go SE)
             _go x
-
+    
+module SMatrixTransforms =
+    open SMatrixTypes
+    
     let toMatrix quadTree size =
         
         let output = Array2D.create size size 0    
@@ -155,16 +160,16 @@ module Sparse =
                 
         let divTo4 (matrix: SparseMatrix<'t>) =
             let l1 = List.filter (fun (i, j, _) -> (i + 1 <= (matrix.numOfRows / 2) && j + 1 <= (matrix.numOfCols / 2))) matrix.notEmptyCells
-            let q1 = new SparseMatrix<'t>((matrix.numOfRows) / 2, (matrix.numOfCols)/2, l1)
+            let q1 = new SparseMatrix<'t>(matrix.numOfRows / 2, matrix.numOfCols /2, l1)
             let l2 = List.filter (fun (i, j, _) -> (i + 1 <= (matrix.numOfRows / 2) && j + 1 > (matrix.numOfCols / 2))) matrix.notEmptyCells
             let l2n = List.map (fun (i, j, k) -> i, j - matrix.numOfCols/2, k) l2
-            let q2 = new SparseMatrix<'t>((matrix.numOfRows) / 2, (matrix.numOfCols)/2, l2n)
+            let q2 = new SparseMatrix<'t>(matrix.numOfRows / 2, matrix.numOfCols /2, l2n)
             let l3 = List.filter (fun (i, j, _) -> (i + 1 > (matrix.numOfRows/2) && j + 1 <= (matrix.numOfCols / 2))) matrix.notEmptyCells
             let l3n = List.map (fun (i, j, k) -> i - matrix.numOfRows/2, j, k) l3
-            let q3 = new SparseMatrix<'t>((matrix.numOfRows) / 2, (matrix.numOfCols)/2, l3n)
+            let q3 = new SparseMatrix<'t>(matrix.numOfRows / 2, matrix.numOfCols /2, l3n)
             let l4 = List.filter (fun (i, j, _) -> (i + 1 > (matrix.numOfRows / 2) && j + 1 > (matrix.numOfCols / 2))) matrix.notEmptyCells
             let l4n = List.map (fun (i, j, k) -> i - matrix.numOfRows / 2, j - matrix.numOfCols / 2, k) l4
-            let q4 = new SparseMatrix<'t>((matrix.numOfRows) / 2, (matrix.numOfCols) / 2, l4n)
+            let q4 = new SparseMatrix<'t>(matrix.numOfRows / 2, matrix.numOfCols / 2, l4n)
             (q1, q2, q3, q4)
                 
         let rec f (matrix: SparseMatrix<'t>) =
@@ -172,7 +177,7 @@ module Sparse =
             elif matrix.numOfRows = 1 && matrix.numOfCols = 1
             then QuadTree.Leaf <| (matrix.notEmptyCells.Head |> third)
             else
-                let (q1, q2, q3, q4) = divTo4 matrix
+                let q1, q2, q3, q4 = divTo4 matrix
                 QuadTree.Node (f q1, f q2, f q3, f q4)
         
         f (toPowOf2SizedMatrix matrix)

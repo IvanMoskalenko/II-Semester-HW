@@ -1,5 +1,5 @@
 ﻿namespace MatrixLib
-module Dense =
+module DenseOp =
     let sum x y =
         let a = Array2D.copy x
         if Array2D.length1 x <> Array2D.length1 y || Array2D.length2 x <> Array2D.length2 y
