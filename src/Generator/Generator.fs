@@ -26,24 +26,18 @@ let printMatrix (x: string [,]) path =
         text <- text + "\n"
     IO.File.WriteAllText (path, text)
                 
-let generator (x: generatorOptions) =  
+let generateSparseMatrix (x: generatorOptions) =
+    let rand = Random()
     for i = 0 to x.amt - 1 do
         let output = Array2D.zeroCreate x.rows x.cols
         for j = 0 to x.rows - 1 do
-            for k = 0 to x.cols - 1 do
-                let rand = Random()
+            for k = 0 to x.cols - 1 do             
                 let y = rand.NextDouble()
-                match x.bType with
-                | Int ->
-                    if y > x.sparsity   
-                    then output.[j, k] <- string (rand.Next())
-                    else output.[j, k] <- "0"
-                | Float ->
-                    if y > x.sparsity   
-                    then output.[j, k] <- string (rand.NextDouble() * float Int32.MaxValue) 
-                    else output.[j, k] <- "0"
-                | Bool ->
-                    if y > x.sparsity  
-                    then output.[j, k] <- "1" 
-                    else output.[j, k] <- "0"
+                if y > x.sparsity
+                then
+                    output.[j, k] <- (match x.bType with
+                                      | Int -> string (rand.Next())
+                                      | Float -> string (rand.NextDouble() * float Int32.MaxValue)
+                                      | Bool -> "1")
+                else output.[j, k] <- "0"
         printMatrix output (IO.Path.Combine (x.path, "Matrix" + string i + ".txt")) 

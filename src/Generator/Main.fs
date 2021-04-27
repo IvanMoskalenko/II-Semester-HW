@@ -28,7 +28,7 @@ type CliArguments =
         let x = parser.Parse argv  
         let y = generatorOptions
                     (x.GetResult Rows, x.GetResult Cols, x.GetResult Amount, x.GetResult Sparsity, x.GetResult Path, x.GetResult Type)            
-        generator y
+        generateSparseMatrix y
         0    
         with
         | :? ArguParseException as ex ->
