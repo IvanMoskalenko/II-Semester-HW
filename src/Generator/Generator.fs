@@ -40,4 +40,4 @@ let generateSparseMatrix (x: generatorOptions) =
                                       | Float -> string (rand.NextDouble() * float Int32.MaxValue)
                                       | Bool -> "1")
                 else output.[j, k] <- "0"
-        printMatrix output (IO.Path.Combine (x.path, "Matrix" + string i + ".txt")) 
+        printMatrix output (IO.Path.Combine (x.path, "Matrix" + string i + ".txt"))
