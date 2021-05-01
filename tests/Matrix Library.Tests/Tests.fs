@@ -63,16 +63,15 @@ let tests =
             let mul2 = SparseOp.multiply (sm1 |> toTree) (sm2 |> toTree) structure
             Expect.equal mul1 mul2 ""
         
-        testProperty "Parallel multiply" <| fun (height: int8) ->
-            let height = height |> Math.Abs |> int
-            let x = genRandomTree height
-            let y = genRandomTree height
+        testProperty "Parallel multiply" <| fun _ ->
+            let x = genRandomTree 7
+            let y = genRandomTree 7
             let res1 = SparseOp.multiply x y structure
             let res2 = SparseOp.parallelMultiply x y structure 3
             Expect.equal res1 res2 ""
                     
-        testProperty "Tensor multiply" <| fun (dim: int) ->
-            let dim = dim |> Math.Abs |> toPowerOf2
+        testProperty "Tensor multiply" <| fun _ ->
+            let dim = rand.Next (0, 32) |> toPowerOf2
             let sm1 = generateSparseMatrix dim dim
             let sm2 = generateSparseMatrix dim dim
             let m1 = genArrayBySparseMatrix sm1
