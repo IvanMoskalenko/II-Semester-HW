@@ -70,8 +70,8 @@ let tests =
             let res2 = SparseOp.parallelMultiply x y structure 3
             Expect.equal res1 res2 ""
                     
-        testProperty "Tensor multiply" <| fun (dim: int) ->
-            let dim = dim |> Math.Abs |> toPowerOf2
+        testProperty "Tensor multiply" <| fun (dim: int8) ->
+            let dim = dim |> int |> Math.Abs |> toPowerOf2
             let sm1 = generateSparseMatrix dim dim
             let sm2 = generateSparseMatrix dim dim
             let m1 = genArrayBySparseMatrix sm1
