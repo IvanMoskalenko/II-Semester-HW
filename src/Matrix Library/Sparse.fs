@@ -16,7 +16,8 @@ module SparseOp =
     open SMatrixTypes
             
     let sum x y structure =
-        let operation, neutral = getOperationAndNeutral structure false
+        let operation = getSumOperation structure
+        let neutral = getNeutral structure
         let rec _go x y =
             match x, y with
             | Leaf a, Leaf b ->
@@ -35,7 +36,8 @@ module SparseOp =
         _go x y
         
     let multiply x y structure =
-        let operation, neutral = getOperationAndNeutral structure true
+        let operation = getMultiplyOperation structure
+        let neutral = getNeutral structure
         let rec _go x y =
             match x, y with
             | Leaf a, Leaf b ->
@@ -54,7 +56,8 @@ module SparseOp =
         _go x y
         
     let parallelMultiply x y structure deepness =
-        let operation, neutral = getOperationAndNeutral structure true
+        let operation = getMultiplyOperation structure
+        let neutral = getNeutral structure
         let rec _go x y c =
             match x, y with
             | Leaf a, Leaf b ->
@@ -82,31 +85,20 @@ module SparseOp =
             | _, _ -> failwith "It's impossible to multiply this"
         _go x y 1
         
-    let scalarMultiply x scalar structure =
-        let operation, neutral = getOperationAndNeutral structure true
-        let rec _go x =
-            match x with
-            | Leaf t -> Leaf (operation scalar t)
-            | None -> None
-            | Node (NW, NE, SW, SE) -> Node (_go NW, _go NE, _go SW, _go SE)
-        if scalar = neutral then None else _go x
-        
-    let tensorMultiply x y structure =
-        if x = None || y = None then None
-        else
-            let rec _go x =
-                match x with
-                | Leaf t -> scalarMultiply y t structure
-                | None -> None
-                | Node (NW, NE, SW, SE) -> Node (_go NW, _go NE, _go SW, _go SE)
-            _go x
-    
 module SMatrixTransforms =
     open SMatrixTypes
+    open AlgebraicStructures
     
-    let toMatrix quadTree size =
-        
-        let output = Array2D.create size size 0    
+    let toPowerOf2 x =
+        let rec go r = if pown 2 r < x then go (r + 1) else r
+        pown 2 (go 0)
+    let first (x, _, _) = x
+    let second (_, x, _) = x
+    let third (_, _, x) = x
+    
+    let toMatrix quadTree size structure =
+        let neutral = getNeutral structure
+        let output = Array2D.create size size neutral    
         let rec _go quadTree (x, y) size =
             let hSize = size / 2
             let qSize = size / 4
@@ -126,31 +118,7 @@ module SMatrixTransforms =
                 let seQP = x + qSize, y + qSize
                 _go q1 nwQP hSize; _go q2 neQP hSize; _go q3 swQP hSize; _go q4 seQP hSize
         _go quadTree (size / 2, size / 2) size
-        
-        let toSparse matrix =
-            let mutable k = 0
-            for i in 0 .. Array2D.length1 matrix - 1 do
-                for j in 0 .. Array2D.length2 matrix - 1 do
-                    if matrix.[i,j] <> 0
-                    then k <- k + 1
-            let unrealIndex = Array2D.length1 matrix + 1
-            let output = Array.create k (unrealIndex, unrealIndex, 0)
-            k <- 0
-            for i in 0 .. Array2D.length1 matrix - 1 do
-                for j in 0 .. Array2D.length2 matrix - 1 do
-                    if matrix.[i,j] <> 0
-                    then
-                        output.[k] <- i, j, matrix.[i,j]
-                        k <- k + 1
-            SparseMatrix (unrealIndex - 1, unrealIndex - 1, List.ofArray output)        
-        toSparse output
-        
-    let first (x, _, _) = x
-    let second (_, x, _) = x
-    let third (_, _, x) = x
-    let toPowerOf2 x =
-            let rec go r = if pown 2 r < x then go (r + 1) else r
-            pown 2 (go 0)
+        output
             
     let toTree matrix =      
         

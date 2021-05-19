@@ -5,7 +5,7 @@ type Monoid<'t> =
     val neutral: 't
     new (x, y) = {sum = x; neutral = y}
 
-type Semiring<'t>  =
+type Semiring<'t> =
     val monoid: Monoid<'t>
     val multiply: 't -> 't -> 't
     new (x, y) = {monoid = x; multiply = y}
@@ -14,12 +14,23 @@ type AlgebraicStructure<'t> =
     | Monoid of Monoid<'t>
     | Semiring of Semiring<'t>
 
-let getOperationAndNeutral structure isMultiply =
-    let operation, neutral =
+let getNeutral structure =
+    let neutral =
          match structure with
-         | Monoid x -> x.sum, x.neutral
-         | Semiring x ->
-             if isMultiply then x.multiply, x.monoid.neutral
-             else x.monoid.sum, x.monoid.neutral
-    operation, neutral
+         | Monoid x -> x.neutral
+         | Semiring x -> x.monoid.neutral
+    neutral
 
+let getSumOperation structure =
+    let sumOperation =
+         match structure with
+         | Monoid x -> x.sum
+         | Semiring x -> x.monoid.sum
+    sumOperation
+    
+let getMultiplyOperation structure =
+    let multiplyOperation =
+         match structure with
+         | Monoid _ -> failwith "Can't multiply in monoid"
+         | Semiring x -> x.multiply
+    multiplyOperation
