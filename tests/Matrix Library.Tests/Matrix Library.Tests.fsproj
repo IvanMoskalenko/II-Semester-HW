@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFrameworks>net5.0</TargetFrameworks>
         <GenerateProgramFile>false</GenerateProgramFile>
+        <RootNamespace>Matrix Library.Tests</RootNamespace>
+        <OutputType>Exe</OutputType>
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="AssemblyInfo.fs" />
@@ -11,7 +12,10 @@
         <Compile Include="Main.fs" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/SecondSemester/SecondSemester.fsproj" />
+        <ProjectReference Include="..\..\src\Matrix Library\Matrix Library.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Expecto.FsCheck" Version="9.0.2" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

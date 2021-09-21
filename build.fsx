@@ -56,7 +56,8 @@ let testsCodeGlob =
 let srcGlob = src @@ "**/*.??proj"
 let testsGlob = __SOURCE_DIRECTORY__  @@ "tests/**/*.??proj"
 
-let mainApp = src @@ productName
+let projectName = "Matrix Library"
+let mainApp = src @@ projectName
 
 let srcAndTest =
     !! srcGlob
