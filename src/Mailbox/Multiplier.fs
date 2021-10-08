@@ -1,7 +1,7 @@
 module Mailbox.Multiplier
+open System.Threading
 open Mailbox.Helpers
 open Mailbox.ReaderWriter
-open System.Threading
 
 let multiplier multiplyFun converter deconverter =
     let mutable counter = 0
@@ -16,8 +16,8 @@ let multiplier multiplyFun converter deconverter =
 
                 | PairOfMatrices (fst, snd) ->
                     let res = multiplyFun (converter fst) (converter snd)
-                    print (deconverter res) $"/home/ivan/Documents/test2/result{counter}.txt"
-                    counter <- Interlocked.Increment(ref counter)
+                    do! print (deconverter res) $"/home/ivan/Documents/test2/result{counter}.txt"
+                    counter <- counter + 1
                     return! loop ()
 
                 | _ -> failwith "not multiplier's task"

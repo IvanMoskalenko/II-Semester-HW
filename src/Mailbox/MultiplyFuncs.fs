@@ -11,13 +11,14 @@ let intStructure =
 let quadTreeMultiply a b =
     SparseMath.multiply intStructure a b
 
-
 // TODO: parallel with number of threads
 let quadTreeParallelMultiply a b =
     SparseMath.multiply intStructure a b
 
-let arrMultiply a b = Dense.multiply a b intStructure
+let arrMultiply a b =
+    Dense.multiply a b intStructure
 
 // TODO: number of threads
-let arrMultiplyParallel a b = Dense.multiplyParallel 2 a b intStructure
+let arrMultiplyParallel a b =
+   Dense.multiplyParallel a b intStructure
 
