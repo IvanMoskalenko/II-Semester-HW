@@ -10,83 +10,28 @@ open PointRegionQuadtree.Utils                // Array2D functions for compariso
 
 let tests =
     testSequenced <| testList "Math operations on quadtrees" [
-        testProperty "Array 2D closure equals closure on QuadTrees" <| fun (size: int) ->
-            let size = (Math.Abs size + 1) |> toNextPowerOfTwo
-            let semiring =
-                    { GetZero = fun () -> 0
-                      Eq = (=)
-                      AddOp = (+)
-                      MulOp = (*) }
-            
-            if 4 < size && size < 32 then
-                let randMatrix = generateMatrix size size 0.5               
-                let sparse = SparseMatrixQT(randMatrix, (fun () -> 0), (=))
-                
-                let expected = closureArr2D 0 (+) (*) (fun x -> x > 0) randMatrix
-                let resSparse = MatrixAlgebra.closure semiring (fun x -> x > 0) sparse
-                
-                let actual = SparseMatrixQT.toArray2D 0 resSparse
-                Expect.equal actual expected ""
         let semiring =
                     { GetZero = fun () -> 0
                       Eq = (=)
                       AddOp = (+)
                       MulOp = (*) }
-                    
-        testCase "Closure testCase" <| fun () ->
-            let matrix = array2D [|
-                    [|0; 1; 564; 5|]
-                    [|1; 28; 1; 6|]
-                    [|1; 5; 1; 8|]
-                    [|1; 8; 1; 6|]
-                |]
-            
-            let matrix' = array2D [|
-                    [|0; 1; 564; 5|]
-                    [|1; 28; 1; 6|]
-                    [|1; 5; 1; 8|]
-                    [|1; 8; 1; 6|]
-                |]
-            
-            let expected = closureArr2D 0 (+) (*) (fun x -> x > 0) matrix
-            let sparse = SparseMatrixQT(matrix', (fun () -> 0), (=))
-            let resSparse = MatrixAlgebra.closure semiring (fun x -> x > 0) sparse
-            let actual = SparseMatrixQT.toArray2D 0 resSparse
-            printfn $"Actual:\n %A{actual}"
-            printfn $"Expected:\n %A{expected}"
-            Expect.equal actual expected ""
-            
+
         let helperMult (matrixA: int[,]) (matrixB: int[,]) =
             let sparseA = SparseMatrixQT(matrixA, (fun () -> 0), (=))
             let sparseB = SparseMatrixQT(matrixB, (fun () -> 0), (=))
-            let expected = multiply 0 (+) (*) matrixA matrixB
+            let expected = multiply matrixA matrixB semiring
             let resSparse = MatrixAlgebra.multiply semiring sparseA sparseB
             let actual = SparseMatrixQT.toArray2D 0 resSparse
             actual, expected
-            
+
         let helperSum (matrixA: int[,]) (matrixB: int[,]) =
             let sparseA = SparseMatrixQT(matrixA, (fun () -> 0), (=))
             let sparseB = SparseMatrixQT(matrixB, (fun () -> 0), (=))
-            let expected = add (+) matrixA matrixB
+            let expected = add matrixA matrixB semiring
             let resSparse = MatrixAlgebra.sum semiring sparseA sparseB
             let actual = SparseMatrixQT.toArray2D 0 resSparse
             actual, expected
-            
-        let helperTensorMult (matrixA: int[,]) (matrixB: int[,]) =
-            let sparseA = SparseMatrixQT(matrixA, (fun () -> 0), (=))
-            let sparseB = SparseMatrixQT(matrixB, (fun () -> 0), (=))
-            let expected = tensorMultiply (*) matrixA matrixB
-            let resSparse = MatrixAlgebra.tensorMultiply' semiring sparseA sparseB
-            let actual = SparseMatrixQT.toArray2D 0 resSparse
-            actual, expected
-            
-        let helperClosure (matrix: int[,]) =
-            let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
-            let expected = closureArr2D 0 (+) (*) (fun _ -> true) matrix
-            let resSparse = MatrixAlgebra.closure semiring (fun _ -> true) sparse
-            let actual = SparseMatrixQT.toArray2D 0 resSparse
-            actual, expected
-        
+
         let matrixA = array2D [|
                     [|5; 0; 4; 6|]
                     [|0; 28; 7; 0|]
@@ -99,7 +44,7 @@ let tests =
                     [|0; 5; 2; 0|]
                     [|8; 0; 1; 7|]
                 |]
-        
+
         let matrixC = array2D [|
                     [|7; 0; 0; 6|]
                     [|0; 0; 7; 0|]
@@ -140,7 +85,7 @@ let tests =
                     [|0; 9; 0; 0; 6; 4; 9; 9|]
                     [|0; 0; 7; 0; 2; 4; 9; 1|]
                 |]
-        
+
         testCase "Sum test 1" <| fun () ->
             let actual, expected = helperSum matrixA matrixB
             Expect.equal actual expected ""
@@ -153,45 +98,7 @@ let tests =
         testCase "Sum test 4" <| fun () ->
             let actual, expected = helperSum matrixG matrixH
             Expect.equal actual expected ""
-            
-        testCase "Tensor test 1" <| fun () ->
-            let actual, expected = helperTensorMult matrixA matrixB
-            Expect.equal actual expected ""
-        testCase "Tensor test 2" <| fun () ->
-            let actual, expected = helperTensorMult matrixC matrixD
-            Expect.equal actual expected ""
-        testCase "Tensor test 3" <| fun () ->
-            let actual, expected = helperTensorMult matrixE matrixF
-            Expect.equal actual expected ""
-        testCase "Tensor test 4" <| fun () ->
-            let actual, expected = helperTensorMult matrixG matrixH
-            Expect.equal actual expected ""
-            
-//        testCase "Closure test 1" <| fun () ->
-//            let actual, expected = helperClosure matrixA
-//            Expect.equal actual expected ""
-//        testCase "Closure test 2" <| fun () ->
-//            let actual, expected = helperClosure matrixB
-//            Expect.equal actual expected ""
-//        testCase "Closure test 3" <| fun () ->
-//            let actual, expected = helperClosure matrixC
-//            Expect.equal actual expected ""
-//        testCase "Closure test 4" <| fun () ->
-//            let actual, expected = helperClosure matrixD
-//            Expect.equal actual expected ""
-//        testCase "Closure test 5" <| fun () ->
-//            let actual, expected = helperClosure matrixE
-//            Expect.equal actual expected ""
-//        testCase "Closure test 6" <| fun () ->
-//            let actual, expected = helperClosure matrixF
-//            Expect.equal actual expected ""
-//        testCase "Closure test 7" <| fun () ->
-//            let actual, expected = helperClosure matrixG
-//            Expect.equal actual expected ""
-//        testCase "Closure test 8" <| fun () ->
-//            let actual, expected = helperClosure matrixH
-//            Expect.equal actual expected ""
-            
+
         testCase "Multiply test 1" <| fun () ->
             let matrixA = array2D [|
                     [|7; 0|]
@@ -203,21 +110,21 @@ let tests =
                 |]
             let sparseA = SparseMatrixQT(matrixA, (fun () -> 0), (=))
             let sparseB = SparseMatrixQT(matrixB, (fun () -> 0), (=))
-            let expected = multiply 0 (+) (*) matrixA matrixB
+            let expected = multiply matrixA matrixB semiring
             let resSparse = MatrixAlgebra.multiply semiring sparseA sparseB
-            
+
             let actual = SparseMatrixQT.toArray2D 0 resSparse
             Expect.equal actual expected ""
-        testCase "Multiply test 2" <| fun () ->            
+        testCase "Multiply test 2" <| fun () ->
             let actual, expected = helperMult matrixC matrixD
-            Expect.equal actual expected ""    
-        testCase "Multiply test 3" <| fun () ->            
+            Expect.equal actual expected ""
+        testCase "Multiply test 3" <| fun () ->
             let actual, expected = helperMult matrixE matrixF
-            Expect.equal actual expected ""                                    
-        testCase "Multiply test 4" <| fun () ->            
+            Expect.equal actual expected ""
+        testCase "Multiply test 4" <| fun () ->
             let actual, expected = helperMult matrixG matrixH
             Expect.equal actual expected ""
-            
+
         testCase "Init test 1" <| fun () ->
             let matrix = array2D [|
                     [|5; 0; 4; 6|]
@@ -228,7 +135,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 2" <| fun () ->
             let matrix = array2D [|
                     [|7; 1;|]
@@ -237,7 +144,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 3" <| fun () ->
             let matrix = array2D [|
                     [|7; 0; 0; 6|]
@@ -248,7 +155,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 4" <| fun () ->
             let matrix = array2D [|
                     [|4; 0; 0; 6|]
@@ -259,7 +166,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 5" <| fun () ->
             let matrix = array2D [|
                     [|7; 0|]
@@ -268,7 +175,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 6" <| fun () ->
             let matrix = array2D [|
                     [|4; 0|]
@@ -277,7 +184,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 7" <| fun () ->
             let matrix = array2D [|
                     [|7; 1; 8; 9; 2; 5; 9; 18|]
@@ -292,7 +199,7 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-        
+
         testCase "Init test 8" <| fun () ->
             let matrix = array2D [|
                     [|0; 0; 0; 0; 2; 5; 9; 18|]
@@ -307,5 +214,5 @@ let tests =
             let sparse = SparseMatrixQT(matrix, (fun () -> 0), (=))
             let result = SparseMatrixQT.toArray2D 0 sparse
             Expect.equal matrix result ""
-                       
+
     ]
