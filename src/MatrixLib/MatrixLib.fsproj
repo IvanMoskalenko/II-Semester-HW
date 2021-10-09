@@ -7,10 +7,9 @@
 
     <ItemGroup>
         <Compile Include="AlgebraicStructures.fs" />
-        <Compile Include="Utils.fs" />
         <Compile Include="SparseMatrixQT.fs" />
-        <Compile Include="SparseMath.fs" />
-        <Compile Include="Dense.fs" />
+        <Compile Include="Array2Dmatrices.fs" />
+        <Compile Include="MatrixAlgebra.fs" />
     </ItemGroup>
 
     <ItemGroup>

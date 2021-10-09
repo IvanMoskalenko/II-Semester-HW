@@ -1,8 +1,8 @@
 ﻿namespace MatrixLib.SparseMatrixQT
 
-open MatrixLib.Utils                    // using fasterToNextPowerOfTwo func.
-open Quadtrees.QuadtreeTypes            // using Square Region
-open Quadtrees.MutableQT                // SparseMatrixQT uses mutable quadtree impl.
+open PointRegionQuadtree.Utils                  // using fasterToNextPowerOfTwo func.
+open PointRegionQuadtree.QtTypes.MatrixCell     // using Square Region
+open PointRegionQuadtree.MutableQT              // SparseMatrixQT uses mutable quadtree impl.
 
 /// Square sparse matrix implemented on quadtrees;
 /// This implementation uses quadtrees with square regions;
@@ -10,36 +10,28 @@ open Quadtrees.MutableQT                // SparseMatrixQT uses mutable quadtree 
 /// if specified size is not a power of two
 /// -> it will be rounded to next nearest power of two
 /// (additional matrix cells are considered zero values).
+/// Square sparse matrix implemented on quadtrees
 [<Struct>]
 type SparseMatrixQT<'a when 'a: equality> =
     val size: int
     val getZero: unit -> 'a
-    val quadtree: Quadtree<'a>
-    
-    new(tree: Quadtree<'a>, getZero) =
-        let sizeX, sizeY = (int tree.Region.SizeX), (int tree.Region.SizeY)
-        
-        if sizeX <> sizeY then
-            invalidArg "tree"
-            <| "Only square-region quadtree is allowed;"
-                + $" err: sizes differ: {sizeX}x{sizeY}"
-        
-        let _size = fastToNextPowerOfTwo sizeX
-        if _size <> sizeX then
-            invalidArg "tree"
-            <| "Quadtree sizes should be equal to power of 2"
-                + $"instead got: {sizeX}x{sizeY}"
-        
-        { size = _size
+    val quadtree: Quadtree<int, 'a>
+
+    new(tree: Quadtree<_,'a>, getZero) =
+        let reg = tree.Region :?> MatrixCell
+        // if region is a matrix cell
+        // -> create sparse matrix
+        // from specified quadtree
+        { size = reg.size
           getZero = getZero
           quadtree = tree }
 
     new(size, getZero) =
-        let _size = fastToNextPowerOfTwo size
-        { size = _size
+        let powerOfTwoSize = fastToNextPowerOfTwo size
+        { size = powerOfTwoSize
           getZero = getZero
           quadtree =
-              { Region = Square(_size)
+              { Region = MatrixCell(powerOfTwoSize)
                 Content = Empty } }
 
     // constructs matrix from existing values
@@ -54,7 +46,7 @@ type SparseMatrixQT<'a when 'a: equality> =
         // square region creation
         let resQuadtree =
             powOfTwoSize
-            |> Square
+            |> MatrixCell
             |> emptyTree
 
         for i in 0 .. length1 - 1 do
@@ -63,7 +55,7 @@ type SparseMatrixQT<'a when 'a: equality> =
                 // insert only non-zero values
                 if not (equalityFunc value (getZero())) then
                     resQuadtree
-                    |> MutableQT.set (i, j) value 
+                    |> MutableQT.insert (i, j) value
                     |> ignore
 
         // matrix constructor
@@ -81,7 +73,7 @@ type SparseMatrixQT<'a when 'a: equality> =
             if not (this.InsideMainBounds(i, j)) then
                 invalidArg "i, j" "index[-es] is out of matrix range"
 
-            match MutableQT.get' (i, j) this.quadtree with
+            match MutableQT.get (i, j) this.quadtree with
             | None -> this.getZero()
             | Some v -> v
 
@@ -92,19 +84,14 @@ type SparseMatrixQT<'a when 'a: equality> =
             // set the point (x, y)
             // with the specified value inside the quadtree
             // (point and value will be replaced if already exist)
-            MutableQT.set (i, j) value this.quadtree |> ignore
-
-[<Struct>]
-type Operators<'a> =
-    { IsEqual: 'a -> 'a -> bool
-      GetZero: unit -> 'a }
+            MutableQT.insert (i, j) value this.quadtree |> ignore
 
 module SparseMatrixQT =
     let init size getZero equalityFunc (initializer: int -> int -> 'a) =
         let tree =
             size
             |> fastToNextPowerOfTwo
-            |> Square
+            |> MatrixCell
             |> emptyTree
 
         for row in 0 .. size - 1 do
@@ -113,27 +100,27 @@ module SparseMatrixQT =
                 // insert only non-zero values
                 if not (equalityFunc value (getZero())) then
                     tree
-                    |> MutableQT.set (row, col) value
+                    |> MutableQT.insert (row, col) value
                     |> ignore
 
         SparseMatrixQT(tree, getZero)
 
     let iteri iterator (matrix: SparseMatrixQT<_>) =
-        MutableQT.iteri' iterator matrix.quadtree
+        MutableQT.iteri iterator matrix.quadtree
 
     let iter iterator (matrix: SparseMatrixQT<_>) =
         MutableQT.iter iterator matrix.quadtree
 
-    let map zeroOfOuterType equalityOfOuter mapping (mtx: SparseMatrixQT<_>) =
-        let rec _go (qt: Quadtree<_>) =
+    let map zeroOfOuterType eqOfOuter mapping (mtx: SparseMatrixQT<_>) =
+        let rec _go (qt: Quadtree<_,_>) =
             match qt.Content with
             | Empty -> emptyTree qt.Region
             | Leaf (point, v) ->
-                let mapped = mapping v
+                let mappedValue = mapping v
                 // place only non-zero leaves in mapped tree
-                if equalityOfOuter mapped (zeroOfOuterType())
+                if eqOfOuter mappedValue (zeroOfOuterType())
                 then emptyTree qt.Region
-                else makeTree qt.Region (Leaf(point, mapped))
+                else makeTree qt.Region (Leaf(point, mappedValue))
             | Nodes (nw, ne, sw, se) ->
                 let _NW = _go nw
                 let _NE = _go ne
@@ -146,17 +133,17 @@ module SparseMatrixQT =
         let treeQT = _go mtx.quadtree
         SparseMatrixQT(treeQT, zeroOfOuterType)
 
-    let mapi zeroOfOuterType equalityOfOuter mapping (mtx: SparseMatrixQT<_>) =
-        let rec _go (qt: Quadtree<_>) =
+    let mapi zeroOfOuterType eqOfOuter mapping (mtx: SparseMatrixQT<_>) =
+        let rec _go (qt: Quadtree<_,_>) =
             match qt.Content with
             | Empty -> emptyTree qt.Region
             | Leaf (point, v) ->
                 let x, y = int (fst point), int (snd point)
-                let mapped = mapping x y v
+                let mappedValue = mapping x y v
                 // place only non-zero leaves in mapped tree
-                if equalityOfOuter mapped (zeroOfOuterType())
+                if eqOfOuter mappedValue (zeroOfOuterType())
                 then emptyTree qt.Region
-                else makeTree qt.Region (Leaf(point, mapped))
+                else makeTree qt.Region (Leaf(point, mappedValue))
             | Nodes (nw, ne, sw, se) ->
                 let _NW = _go nw
                 let _NE = _go ne

@@ -1,4 +1,4 @@
-﻿namespace Quadtrees.QuadtreeTypes
+﻿module PointRegionQuadtree.QtTypes.Direction
 
 /// Implements direction for two-dimensional space
 type Direction =
