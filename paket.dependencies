@@ -9,6 +9,7 @@ nuget Microsoft.NET.Test.Sdk 16.8.0
 nuget altcover ~> 7
 nuget Packaging.Targets 0.1.189
 
+nuget Expecto.FsCheck 9.0.2
 // [ FAKE GROUP ]
 group Build
     storage: none

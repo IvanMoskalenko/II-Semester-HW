@@ -1,12 +1,10 @@
 module PointRegionQuadtree.UnitTests.MainTests
-open System
 open Expecto                        // Test Framework
 open MatrixLib
 open MatrixLib.MatrixAlgebra
 open MatrixLib.Array2dMatrices
 open MatrixLib.AlgebraicStructures  // Semirings
 open MatrixLib.SparseMatrixQT       // Sparse matrix functions
-open PointRegionQuadtree.Utils                // Array2D functions for comparison
 
 let tests =
     testSequenced <| testList "Math operations on quadtrees" [
