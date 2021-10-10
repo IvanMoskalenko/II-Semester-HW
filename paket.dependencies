@@ -1,45 +1,42 @@
-source https://www.nuget.org/api/v2
 source https://api.nuget.org/v3/index.json
-storage: none
 
-nuget Argu // 6.1.1
+storage: none
+framework: net50, netstandard2.0, netstandard2.1
+
+nuget Argu
 nuget FSharp.Core 5.0.0
+nuget Expecto
+nuget FsCheck 2.16.0 // 2.14.0 for net 3.1
+nuget Expecto.FsCheck
 nuget System.Runtime.Numerics
 
-nuget FsCheck 2.16.0 // 2.14.0
-nuget Expecto 9.0.4 // 9.0.2
-nuget Expecto.FsCheck 9.0.4 // 9.0.2
+group Docs
+  source https://api.nuget.org/v3/index.json
 
-nuget YoloDev.Expecto.TestSdk 0.12.8
-nuget Microsoft.NET.Test.Sdk 16.11.0
+  framework: netstandard2.0
+  storage: symlink
 
-nuget altcover // ~> 7
-nuget Packaging.Targets // 0.1.189
-
+  nuget FSharp.Compiler.Service ~> 40.0.0 // 35.0 for net 3.1
+  nuget FSharp.Formatting ~> 11.2.0 // 4.1 for net 3.1
+  nuget Newtonsoft.Json
 
 // [ FAKE GROUP ]
 group Build
-    storage: none
-    source https://www.nuget.org/api/v2
-    source https://api.nuget.org/v3/index.json
-    
-    nuget Argu
-    
-    nuget Fantomas 3.2
-    
-    nuget Fake.IO.FileSystem 5.20.4
-    nuget Fake.Core.Target 5.20.4
-    nuget Fake.Core.ReleaseNotes 5.20.4
-    nuget FAKE.Core.Environment 5.20.4
-    nuget Fake.DotNet.Cli 5.20.4
-    nuget FAKE.Core.Process 5.20.4
-    nuget Fake.DotNet.AssemblyInfoFile 5.20.4
-    nuget Fake.Tools.Git 5.20.4
-    nuget Fake.DotNet.Paket 5.20.4
-    nuget Fake.Api.GitHub 5.20.4
-    nuget Fake.BuildServer.GitHubActions 5.20.4
-
-group Analyzers
-  source https://www.nuget.org/api/v2
   source https://api.nuget.org/v3/index.json
-  nuget BinaryDefense.FSharp.Analyzers.Hashing 0.2.1
+
+  framework: netstandard2.0
+  storage: none
+
+  nuget FSharp.Core 5.0.0 // https://github.com/fsharp/FAKE/issues/2001
+  nuget Fake.Core.Target
+  nuget Fake.Core.Process
+  nuget Fake.DotNet.Cli
+  nuget Fake.Core.ReleaseNotes
+  nuget Fake.DotNet.AssemblyInfoFile
+  nuget Fake.DotNet.Paket
+  nuget Fake.Tools.Git
+  nuget Fake.Core.Environment
+  nuget Fake.Core.UserInput
+  nuget Fake.IO.FileSystem
+  nuget Fake.DotNet.MsBuild
+  nuget Fake.Api.GitHub
