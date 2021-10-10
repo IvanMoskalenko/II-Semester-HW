@@ -11,11 +11,6 @@
         <Compile Include="Array2Dmatrices.fs" />
         <Compile Include="MatrixAlgebra.fs" />
     </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="System.Runtime.Numerics" Version="4.3.0" />
-    </ItemGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\Quadtrees\Quadtrees.fsproj" />
     </ItemGroup>

@@ -56,7 +56,7 @@ let testsCodeGlob =
 let srcGlob = src @@ "**/*.??proj"
 let testsGlob = __SOURCE_DIRECTORY__  @@ "tests/**/*.??proj"
 
-let projectName = "Matrix Library"
+let projectName = "MatrixLib"
 let mainApp = src @@ projectName
 
 let srcAndTest =
@@ -100,7 +100,7 @@ let runtimes = [
     "win-x64", "CreateZip"
 ]
 
-let disableCodeCoverage = environVarAsBoolOrDefault "DISABLE_COVERAGE" false
+let disableCodeCoverage = environVarAsBoolOrDefault "DISABLE_COVERAGE" true
 
 let githubToken = Environment.environVarOrNone "GITHUB_TOKEN"
 Option.iter(TraceSecrets.register "<GITHUB_TOKEN>")
@@ -470,7 +470,7 @@ let generateAssemblyInfo _ =
           AssemblyInfo.Metadata("GitHash", Git.Information.getCurrentSHA1(null))
         ]
 
-    let getProjectDetails projectPath =
+    let getProjectDetails (projectPath: string) =
         let projectName = IO.Path.GetFileNameWithoutExtension(projectPath)
         (
             projectPath,
@@ -610,9 +610,9 @@ Target.create "Release" ignore
 
 "DotnetRestore"
     ==> "DotnetBuild"
-    //==> "FSharpAnalyzers"
+    // ==> "FSharpAnalyzers"
     ==> "DotnetTest"
-    =?> ("GenerateCoverageReport", not disableCodeCoverage)
+    // =?> ("GenerateCoverageReport", not disableCodeCoverage)
     ==> "CreatePackages"
     ==> "GitRelease"
     ==> "GitHubRelease"

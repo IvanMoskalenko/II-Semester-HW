@@ -9,19 +9,19 @@
       ]
     },
     "dotnet-reportgenerator-globaltool": {
-      "version": "4.2.15",
+      "version": "4.8.12",
       "commands": [
         "reportgenerator"
       ]
     },
     "fake-cli": {
-      "version": "5.20.4-alpha.1642",
+      "version": "5.20.4",
       "commands": [
         "fake"
       ]
     },
     "paket": {
-      "version": "6.0.0-beta8",
+      "version": "6.0.7",
       "commands": [
         "paket"
       ]
@@ -30,6 +30,12 @@
       "version": "0.7.0",
       "commands": [
         "fsharp-analyzers"
+      ]
+    },
+    "dotnet-tarball": {
+      "version": "0.1.189",
+      "commands": [
+        "dotnet-tarball"
       ]
     }
   }
