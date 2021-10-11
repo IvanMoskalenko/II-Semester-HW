@@ -14,11 +14,10 @@ let rateMatricesOnSparsity fst snd =
     let sparsityA = evaluateSparsity fst
     let sparsityB = evaluateSparsity snd
     let totalSize = fst.GetLength(0) + fst.GetLength(1) + snd.GetLength(0) + snd.GetLength(1)
-    match (sparsityA, sparsityB, totalSize) with
-    | _, _, _ when (sparsityA > 0.75 || sparsityB > 0.75) && (totalSize < 16) -> QtDefault
-    | _, _, _ when (sparsityA > 0.75 || sparsityB > 0.75) && (totalSize >= 16) -> QtParallel
-    | _, _, _ when (sparsityA <= 0.75 && sparsityB <= 0.75) && (totalSize < 16) -> ArrDefault
-    | _, _, _  -> ArrParallel
+    if (sparsityA > 0.75 || sparsityB > 0.75) && (totalSize < 16) then QtDefault
+    elif (sparsityA > 0.75 || sparsityB > 0.75) && (totalSize >= 16) then QtParallel
+    elif (sparsityA <= 0.75 && sparsityB <= 0.75) && (totalSize < 16) then ArrDefault
+    else ArrParallel
 
 let balancer (qtMultiply: MailboxProcessor<messageBalancer>) (qtParallelMultiply: MailboxProcessor<messageBalancer>)
              (arrMultiply: MailboxProcessor<messageBalancer>) (arrParallelMultiply: MailboxProcessor<messageBalancer>) =
