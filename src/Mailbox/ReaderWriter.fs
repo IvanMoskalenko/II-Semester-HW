@@ -12,11 +12,16 @@ let print (x: int [,]) path =
         writer.WriteLine();
 
 let read path =
-    let fileLines = File.ReadAllLines(path)
-    let matrix = Array2D.zeroCreate fileLines.Length (fileLines.[0].Split(' ').Length - 1)
-    for i = 0 to fileLines.Length - 1 do
-        let line = fileLines.[i].Trim(' ')
+    let readLines (path: string) = seq {
+        use sr = new StreamReader (path)
+        while not sr.EndOfStream do
+            yield sr.ReadLine ()
+    }
+    let rawMatrix = readLines path
+    let matrix = Array2D.zeroCreate (Seq.length(rawMatrix)) (Seq.head(rawMatrix).Split(' ').Length - 1)
+    let writeLine i (line: string) =
+        let split = line.Trim(' ').Split(' ')
         for j = 0 to matrix.GetLength(1) - 1 do
-            let split = line.Split(' ')
             matrix.[i, j] <- int split.[j]
+    Seq.iteri writeLine rawMatrix
     matrix
