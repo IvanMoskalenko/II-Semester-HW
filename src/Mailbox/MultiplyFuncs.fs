@@ -11,14 +11,14 @@ let intStructure =
       MulOp= (*) }
 
 let quadTreeMultiply a b =
-    async { return MatrixAlgebra.multiply intStructure a b }
+    MatrixAlgebra.multiply intStructure a b
 
 let quadTreeParallelMultiply a b =
-    async { return MatrixAlgebra.multiplyParallel intStructure a b 2 }
+    MatrixAlgebra.multiplyParallel intStructure a b 2
 
 let arrMultiply a b =
-    async { return MatrixArray2D.multiply a b intStructure }
+    MatrixArray2D.multiply a b intStructure
 
 let arrMultiplyParallel a b =
-   async { return MatrixArray2D.multiplyParallel a b intStructure }
+   MatrixArray2D.multiplyParallel a b intStructure
 

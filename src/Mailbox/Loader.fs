@@ -24,8 +24,8 @@ let loader path (balancer: MailboxProcessor<messageBalancer>) (pairAmount: int) 
                         inbox.Post (messageLoader.EOS ch)
                         return! loop input
                     | fstName :: sndName :: tail ->
-                        let! firstMatrix = read fstName
-                        let! secondMatrix = read sndName
+                        let firstMatrix = read fstName
+                        let secondMatrix = read sndName
                         ((firstMatrix, Path.GetFileNameWithoutExtension(fstName)),
                          (secondMatrix, Path.GetFileNameWithoutExtension(sndName)))
                         |> PairOfMatrices |> balancer.Post

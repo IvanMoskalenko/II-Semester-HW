@@ -6,10 +6,9 @@ open Helpers
 open MatrixLib.SparseMatrixQT
 
 let arrToQt arr =
-    async { return (SparseMatrixQT (arr, (fun () -> 0), (=))) }
+    (SparseMatrixQT (arr, (fun () -> 0), (=)))
 let QtToArr qt =
-    async { return SparseMatrixQT.toArray2D 0 qt }
-let id x = async { return x }
+    SparseMatrixQT.toArray2D 0 qt
 let processFiles path amount saveDir =
     let balancer = Balancer.balancer
                        (multiplier quadTreeMultiply arrToQt QtToArr saveDir)
