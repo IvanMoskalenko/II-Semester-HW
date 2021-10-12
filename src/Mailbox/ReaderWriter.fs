@@ -1,5 +1,4 @@
 module Mailbox.ReaderWriter
-open System
 open System.IO
 
 let print (x: int [,]) path =
@@ -12,16 +11,7 @@ let print (x: int [,]) path =
         writer.WriteLine();
 
 let read path =
-    let readLines (path: string) = seq {
-        use sr = new StreamReader (path)
-        while not sr.EndOfStream do
-            yield sr.ReadLine ()
-    }
-    let rawMatrix = readLines path
-    let matrix = Array2D.zeroCreate (Seq.length(rawMatrix)) (Seq.head(rawMatrix).Split(' ').Length - 1)
-    let writeLine i (line: string) =
-        let split = line.Trim(' ').Split(' ')
-        for j = 0 to matrix.GetLength(1) - 1 do
-            matrix.[i, j] <- int split.[j]
-    Seq.iteri writeLine rawMatrix
-    matrix
+    File.ReadLines path
+    |> Seq.map (fun s -> s.Trim(' ').Split(' ') |> Array.map int)
+    |> array2D<_,_>
+
