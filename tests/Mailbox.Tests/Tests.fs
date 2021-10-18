@@ -10,7 +10,6 @@ let tempPath = __SOURCE_DIRECTORY__ + "/tempMatrices"
 let tempPathToSave = __SOURCE_DIRECTORY__ + "/tempMatricesResults"
 
 let helper size numberToGenerate numberOfPairsToMultiply =
-    let tempPath = __SOURCE_DIRECTORY__ + "/tempMatrices"
     let generatorConfig = generatorOptions(size, size, numberToGenerate, 0.75, tempPath, Int)
     generateSparseMatrix(generatorConfig)
     processFiles tempPath numberOfPairsToMultiply tempPath
