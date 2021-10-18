@@ -7,8 +7,8 @@ let print (x: int [,]) path =
     use writer = new StreamWriter(path: string)
     for j = 0 to rows - 1 do
         for i = 0 to cols - 1 do
-            writer.Write(string x.[i, j] + " ");
-        writer.WriteLine();
+            writer.Write(string x.[i, j] + " ")
+        writer.WriteLine()
 
 let read path =
     File.ReadLines path
