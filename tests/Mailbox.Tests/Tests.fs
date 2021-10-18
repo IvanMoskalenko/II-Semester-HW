@@ -52,7 +52,7 @@ let tests =
                 for file in allResultFiles do
                     let matrix = read file
                     Expect.equal (matrix.GetLength(0)) size ""
-                    Expect.equal (matrix.GetLength(0)) size ""
+                    Expect.equal (matrix.GetLength(1)) size ""
                     File.Delete(file)
 
   ]
