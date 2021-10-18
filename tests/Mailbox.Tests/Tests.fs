@@ -38,7 +38,7 @@ let tests =
                 let allFilesLength = helper size n fixedN
                 Expect.equal allFilesLength (n + fixedN) ""
 
-        testProperty "Number of result files should be n / 2 when n is number of files that user specifd"
+        testProperty "Dimensions of results should have right sizes"
         <| fun ((size, n): int * int) ->
             if (n % 2 = 0) && (n > 0) && (size > 0)
             then
