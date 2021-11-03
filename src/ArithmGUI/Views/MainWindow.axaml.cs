@@ -40,7 +40,7 @@ namespace ArithmGUI.Views
                 {
                     var ast = Interpreter.Interpreter.parseProgramToAST(_codeBox.Text);
                     var (_, pD) = Interpreter.Interpreter.run(ast);
-                    return pD["print"];
+                    return "Process finished!\n" + pD["print"];
                 }
                 catch (Exception ex)
                 {

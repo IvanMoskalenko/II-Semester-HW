@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ArithmGUI.ViewModels;
 using ArithmGUI.Views;
 
 namespace ArithmGUI
@@ -12,7 +11,8 @@ namespace ArithmGUI
         {
             AvaloniaXamlLoader.Load(this);
         }
-
+        
+        private class MainWindowViewModel { }
         public override void OnFrameworkInitializationCompleted()
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
