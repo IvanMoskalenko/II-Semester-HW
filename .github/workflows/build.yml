@@ -21,7 +21,7 @@ jobs:
       run: dotnet tool restore
     - name: Restore dependencies
       run: |
-           dotnet nuget add source --username IvanMoskalenko --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/IvanMoskalenko/index.json"
+           dotnet nuget add source --username IvanMoskalenko --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/m0rphed/index.json"
            dotnet restore
     - name: Run build
       run: dotnet fake build -t Test

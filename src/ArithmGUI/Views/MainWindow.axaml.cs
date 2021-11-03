@@ -5,6 +5,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using LongArithm.Interpreter;
+
 
 namespace ArithmGUI.Views
 {
@@ -38,9 +40,14 @@ namespace ArithmGUI.Views
             {
                 try
                 {
-                    var ast = Interpreter.Interpreter.parseProgramToAST(_codeBox.Text);
-                    var (_, pD) = Interpreter.Interpreter.run(ast);
-                    return "Process finished!\n" + pD["print"];
+                    var res = Runners.run(_codeBox.Text);
+                    var buffer = res.OutputBuffer;
+                    var resString = "";
+                    while (buffer.Count > 0)
+                    {
+                        resString += buffer.Dequeue() + "\n";
+                    }
+                    return "Process finished!\n" + resString;
                 }
                 catch (Exception ex)
                 {
