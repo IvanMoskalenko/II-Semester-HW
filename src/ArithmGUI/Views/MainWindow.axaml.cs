@@ -7,7 +7,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using LongArithm.Interpreter;
 
-
 namespace ArithmGUI.Views
 {
     public  class MainWindow : Window
@@ -20,7 +19,7 @@ namespace ArithmGUI.Views
         public MainWindow()
         {
             InitializeComponent();
-            
+            Events.printed.Subscribe(PrintToConsole);
             _codeBox = this.Find<TextBox>( "CodeBox");
             _consoleBox = this.Find<TextBox>("ConsoleBox");
             _runButton = this.FindControl<MenuItem>("RunButton");
@@ -32,40 +31,53 @@ namespace ArithmGUI.Views
             AvaloniaXamlLoader.Load(this);
         }
 
+        private void PrintToConsole(string msg)
+        {
+            Dispatcher.UIThread.Post(() =>
+                _consoleBox.Text += $"\n{msg}");
+        }
+        
+        private void OnFinish()
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                _consoleBox.Text += "\nProcess finished";
+                _runButton.IsEnabled = true;
+            });
+        }
+        
+        private void OnFinishWithErrors(string error)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                _consoleBox.Text += "\nProcess finished with errors";
+                _consoleBox.Text += $"\n{error}";
+                _runButton.IsEnabled = true;
+            });
+        }
+        
         public void Start(object sender, RoutedEventArgs e)
         {
             _consoleBox.Text = "Processing...";
             _runButton.IsEnabled = false;
-            var task = new Task<string>(() =>
+            var task = new Task(() =>
             {
-                try
+                var res = Runners.runTryCatchErrors(_codeBox.Text);
+                if (res.IsError)
                 {
-                    var res = Runners.run(_codeBox.Text);
-                    var buffer = res.OutputBuffer;
-                    var resString = "";
-                    while (buffer.Count > 0)
-                    {
-                        resString += buffer.Dequeue() + "\n";
-                    }
-                    return "Process finished!\n" + resString;
+                    OnFinishWithErrors(res.ErrorValue);
                 }
-                catch (Exception ex)
+                else
                 {
-                    return ex.Message;
+                    OnFinish();
                 }
             });
-            task.ContinueWith(x => 
-                Dispatcher.UIThread.Post(() =>
-                {
-                    _consoleBox.Text = x.Result;
-                    _runButton.IsEnabled = true;
-                })
-            );
             task.Start();
         }
         
         public async void Open(object sender, RoutedEventArgs e)
         {
+            Save(sender, e);
             var dialog = new OpenFileDialog();
             dialog.Filters.Add(new FileDialogFilter { Extensions = { "txt" } });
             var path = await dialog.ShowAsync(this);
@@ -88,6 +100,7 @@ namespace ArithmGUI.Views
         
         public void New(object sender, RoutedEventArgs e)
         {
+            Save(sender, e);
             _codeBox.Text = "";
             _openedFilePath = "";
             Save(sender, e);
