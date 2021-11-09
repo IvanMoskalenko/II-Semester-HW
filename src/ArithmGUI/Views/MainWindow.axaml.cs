@@ -87,6 +87,11 @@ namespace ArithmGUI.Views
         
         public void Start(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(_codeBox.Text))
+            {
+                _consoleBox.Text = "Empty program";
+                return;
+            }
             _consoleBox.Text = "Processing...";
             _runButton.IsEnabled = false;
             var task = new Task(() =>
