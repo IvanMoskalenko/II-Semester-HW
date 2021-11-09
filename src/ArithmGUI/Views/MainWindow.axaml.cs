@@ -88,14 +88,22 @@ namespace ArithmGUI.Views
 
         private async void Save(object sender, RoutedEventArgs e)
         {
-            var dialog = new SaveFileDialog
+            if (_openedFilePath == "") 
             {
-                InitialFileName = _openedFilePath
-            };
-            var path = await dialog.ShowAsync(this);
-            if (path == null) return;
-            await File.WriteAllTextAsync(path, _codeBox.Text);
-            _openedFilePath = path;
+                var dialog = new SaveFileDialog
+                {
+                    InitialFileName = _openedFilePath
+                };
+                var path = await dialog.ShowAsync(this);
+                if (path == null) return;
+                await File.WriteAllTextAsync(path, _codeBox.Text);
+                _openedFilePath = path;
+            }
+            else
+            {
+                await File.WriteAllTextAsync(_openedFilePath, _codeBox.Text);
+            }
+            
         }
         
         public void New(object sender, RoutedEventArgs e)
