@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -9,21 +10,25 @@ using LongArithm.Interpreter;
 
 namespace ArithmGUI.Views
 {
-    public  class MainWindow : Window
+    public class MainWindow : Window
     {
         private readonly TextBox _codeBox;
         private readonly TextBox _consoleBox;
         private readonly MenuItem _runButton;
         private string _openedFilePath;
+        private bool _ctrlPressed;
 
         public MainWindow()
         {
             InitializeComponent();
             Events.printed.Subscribe(PrintToConsole);
+            Grid grid = this.FindControl<Grid>("Grid");
             _codeBox = this.Find<TextBox>( "CodeBox");
             _consoleBox = this.Find<TextBox>("ConsoleBox");
             _runButton = this.FindControl<MenuItem>("RunButton");
             _openedFilePath = "";
+            grid.KeyDown += CtrlKeyboardEvent;
+            grid.KeyUp += KeyboardEvent;
         }
 
         private void InitializeComponent()
@@ -35,6 +40,30 @@ namespace ArithmGUI.Views
         {
             Dispatcher.UIThread.Post(() =>
                 _consoleBox.Text += $"\n{msg}");
+        }
+        
+        private void CtrlKeyboardEvent(object? sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.LeftCtrl) return;
+            _ctrlPressed = true;
+        }
+
+        private void KeyboardEvent(object? sender, KeyEventArgs e)
+        {
+            if (!_ctrlPressed) return;
+            switch (e.Key)
+            {
+                case Key.S:
+                    Save();
+                    break;
+                case Key.O:
+                    Open();
+                    break;
+                case Key.N:
+                    New();
+                    break;
+            }
+            _ctrlPressed = false;
         }
         
         private void OnFinish()
@@ -74,10 +103,34 @@ namespace ArithmGUI.Views
             });
             task.Start();
         }
-        
-        public async void Open(object sender, RoutedEventArgs e)
+
+        private async void SaveAs()
         {
-            Save(sender, e);
+            var dialog = new SaveFileDialog
+            {
+                InitialFileName = _openedFilePath
+            };
+            var path = await dialog.ShowAsync(this);
+            if (path == null) return;
+            await File.WriteAllTextAsync(path, _codeBox.Text);
+            _openedFilePath = path;
+        }
+
+        private async void Save()
+        {
+            if (_openedFilePath == "") 
+            {
+                SaveAs();
+            }
+            else
+            {
+                await File.WriteAllTextAsync(_openedFilePath, _codeBox.Text);
+            }
+        }
+
+        private async void Open()
+        {
+            Save();
             var dialog = new OpenFileDialog();
             dialog.Filters.Add(new FileDialogFilter { Extensions = { "txt" } });
             var path = await dialog.ShowAsync(this);
@@ -86,32 +139,32 @@ namespace ArithmGUI.Views
             _openedFilePath = path[0];
         }
 
-        private async void Save(object sender, RoutedEventArgs e)
+        private void New()
         {
-            if (_openedFilePath == "") 
-            {
-                var dialog = new SaveFileDialog
-                {
-                    InitialFileName = _openedFilePath
-                };
-                var path = await dialog.ShowAsync(this);
-                if (path == null) return;
-                await File.WriteAllTextAsync(path, _codeBox.Text);
-                _openedFilePath = path;
-            }
-            else
-            {
-                await File.WriteAllTextAsync(_openedFilePath, _codeBox.Text);
-            }
-            
-        }
-        
-        public void New(object sender, RoutedEventArgs e)
-        {
-            Save(sender, e);
+            Save();
             _codeBox.Text = "";
             _openedFilePath = "";
-            Save(sender, e);
+            Save();
+        }
+        
+        public void OpenEvent(object sender, RoutedEventArgs e)
+        {
+            Open();
+        }
+
+        private void SaveEvent(object sender, RoutedEventArgs e)
+        {
+            Save();
+        }
+        
+        private void SaveAsEvent(object sender, RoutedEventArgs e)
+        {
+            SaveAs();
+        }
+        
+        public void NewEvent(object sender, RoutedEventArgs e)
+        {
+            New();
         }
 
     }

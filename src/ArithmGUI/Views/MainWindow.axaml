@@ -7,12 +7,13 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="ArithmGUI">
     
-    <Grid RowDefinitions="Auto,*,Auto,0.3*">
+    <Grid RowDefinitions="Auto,*,Auto,0.3*" Name="Grid">
         <Menu>
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" Click="Open"/>
-                <MenuItem Header="_New" Click="New"/>
-                <MenuItem Header="_Save" Click="Save"/>
+                <MenuItem Header="_Open" InputGesture="Ctrl + O" Click="OpenEvent"/>
+                <MenuItem Header="_New" InputGesture="Ctrl + N" Click="NewEvent"/>
+                <MenuItem Header="_Save" InputGesture="Ctrl + S" Click="SaveEvent"/>
+                <MenuItem Header="_Save as" Click="SaveAsEvent"/>
             </MenuItem>
             <MenuItem Header="_Start" Click="Start" Name="RunButton"/>
         </Menu>
