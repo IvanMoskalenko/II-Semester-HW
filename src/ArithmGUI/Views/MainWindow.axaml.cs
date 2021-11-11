@@ -1,12 +1,12 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Arithm;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using LongArithm.Interpreter;
 
 namespace ArithmGUI.Views
 {
@@ -21,7 +21,7 @@ namespace ArithmGUI.Views
         public MainWindow()
         {
             InitializeComponent();
-            Events.printed.Subscribe(PrintToConsole);
+            Interpreter.printed.Subscribe(PrintToConsole);
             Grid grid = this.FindControl<Grid>("Grid");
             _codeBox = this.Find<TextBox>( "CodeBox");
             _consoleBox = this.Find<TextBox>("ConsoleBox");
@@ -96,14 +96,14 @@ namespace ArithmGUI.Views
             _runButton.IsEnabled = false;
             var task = new Task(() =>
             {
-                var res = Runners.runTryCatchErrors(_codeBox.Text);
-                if (res.IsError)
+                try
                 {
-                    OnFinishWithErrors(res.ErrorValue);
-                }
-                else
-                {
+                    Interpreter.runPrint(Lexer.parse(_codeBox.Text));
                     OnFinish();
+                }
+                catch (Exception ex)
+                {
+                    OnFinishWithErrors(ex.Message);
                 }
             });
             task.Start();
